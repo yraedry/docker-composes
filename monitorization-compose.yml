@@ -1,0 +1,25 @@
+version: '3.8'
+services:
+  tautulli:
+    image: tautulli/tautulli:latest
+    container_name: tautulli
+    environment:
+      - PUID=${PUID} # default user id, defined in .env
+      - PGID=${PGID} # default group id, defined in .env
+      - TZ=${TZ} # timezone, defined in .env
+    volumes:
+      - ${ROOT}/config/tautulli:/config
+      - ${ROOT}/config/plex/logs:/plex_logs
+    ports:
+      - 8181:8181
+    restart: unless-stopped
+
+  uptime-kuma:
+    image: louislam/uptime-kuma:latest
+    container_name: uptime-kuma
+    volumes:
+      - ${ROOT}/config/uptime-kuma:/app/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "3001:3001"  # <Host Port>:<Container Port>
+    restart: unless-stopped

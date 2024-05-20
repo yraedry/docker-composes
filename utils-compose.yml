@@ -1,0 +1,53 @@
+version: '3.8'
+services:
+  homer:
+    image: b4bz/homer
+    container_name: homer
+    environment:
+      - PUID=${PUID} # default user id, defined in .env
+      - PGID=${PGID} # default group id, defined in .env
+      - TZ=${TZ} # timezone, defined in .env
+    volumes:
+      - ${ROOT}/config/homer/assets:/www/assets
+    ports:
+      - 8010:8080
+    restart: unless-stopped
+
+
+  npm:
+    image: 'jc21/nginx-proxy-manager:latest'
+    container_name: npm
+    ports:
+      # These ports are in format <host-port>:<container-port>
+      - '80:80' # Public HTTP Port
+      - '443:443' # Public HTTPS Port
+      - '81:81' # Admin Web Port
+    volumes:
+      - ${ROOT}/config/npm/data:/data
+      - ${ROOT}/config/npm/letsencrypt:/etc/letsencrypt
+    restart: unless-stopped
+   
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - TZ=${TZ} # timezone, defined in .env
+      - WATCHTOWER_LIFECYCLE_HOOKS=1 
+      - WATCHTOWER_NOTIFICATIONS=shoutrrr
+      - WATCHTOWER_NOTIFICATION_URL=telegram://${BOT_TOKEN}@telegram/?channels=${CHAT_ID}
+    command: radarr sonarr prowlarr plex-server transmission npm tautulli homer uptime-kuma --interval 86400 --cleanup --debug
+    restart: unless-stopped
+
+  overseerr:
+    image: lscr.io/linuxserver/overseerr:latest
+    container_name: overseerr
+    environment:
+      - TZ=${TZ} # timezone, defined in .env
+    volumes:
+      - ${ROOT}/config/overserr:/config # config files
+    ports:
+      - 5055:5055
+    restart: unless-stopped
+
