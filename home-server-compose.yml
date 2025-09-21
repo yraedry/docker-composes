@@ -1,41 +1,16 @@
 version: "3.4"
 services:
-  plex-server:
-    container_name: plex-server
-    image: plexinc/pms-docker:latest
-    network_mode: "host" 
-    privileged: true
-    environment:
-      - TZ=${TZ} # timezone, defined in .env
-      - VERSION=docker
-      - NVIDIA_VISIBLE_DEVICES=all
-      - NVIDIA_DRIVER_CAPABILITIES=compute,video,utility
-    volumes:
-      - ${ROOT}/config/plex/db:/config # plex database
-      - ${ROOT}/config/plex/transcode:/transcode # temp transcoded files
-      - ${SHARED}:/biblioteca
-    ports:
-      - 32400:32400
-    restart: unless-stopped
-    deploy:
-      resources:
-        reservations:
-          devices:
-           - capabilities: [gpu]
-
   radarr:
     container_name: radarr
     image: linuxserver/radarr:latest
     environment:
-      - DOCKER_MODS=ghcr.io/gilbn/theme.park:radarr 
-      - TP_THEME=dracula
-      - PUID=${PUID_RADARR} # default user id, defined in .env
-      - PGID=${PGID} # default group id, defined in .env
-      - TZ=${TZ} # timezone, defined in .env
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ${ROOT}/config/radarr:/config # config files
-      - ${SHARED}:/AlmacenUnificado # movies folder
+      - ${CONFIG}/radarr:/config
+      - ${SHARED}:/AlmacenUnificado
     ports:
       - 7878:7878
     restart: unless-stopped
@@ -44,15 +19,13 @@ services:
     container_name: sonarr
     image: linuxserver/sonarr:latest
     environment:
-      - DOCKER_MODS=ghcr.io/gilbn/theme.park:sonarr 
-      - TP_THEME=aquamarine
-      - PUID=${PUID_SONARR} # default user id, defined in .env
-      - PGID=${PGID} # default group id, defined in .env
-      - TZ=${TZ} # timezone, defined in .env
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ${ROOT}/config/sonarr:/config # config files
-      - ${SHARED}:/AlmacenUnificado # series folder
+      - ${CONFIG}/sonarr:/config
+      - ${SHARED}:/AlmacenUnificado
     ports:
       - 8989:8989
     restart: unless-stopped
@@ -63,30 +36,28 @@ services:
     ports:
       - "9696:9696"
     environment:
-      - DOCKER_MODS=ghcr.io/gilbn/theme.park:prowlarr 
-      - TP_THEME=hotpink
-      - PUID=${PUID_PROWLARR} # default user id, defined in .env
-      - PGID=${PGID} # default group id, defined in .env
-      - TZ=${TZ} # timezone, defined in .env
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ${SHARED}:/AlmacenUnificado/multimedia/descargas # place where to put .torrent files for manual download
-      - ${ROOT}/config/prowlarr:/config # config files
+      - ${CONFIG}/prowlarr:/config
+      - ${SHARED}:/AlmacenUnificado/multimedia/descargas
     restart: unless-stopped
       
   transmission:
-    image: lscr.io/linuxserver/transmission:latest
+    image: lscr.io/linuxserver/transmission:4.0.4
     container_name: transmission
     environment:
-      - PUID=${PUID} # User id
-      - PGID=${PUID} # Group id
-      - TZ=${TZ} # Your current timezone
+      - PUID=${PUID}
+      - PGID=${PUID}
+      - TZ=${TZ}
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ${ROOT}/config/Transmission:/config # Change this to your docker config folder
-      - ${SHARED}:/AlmacenUnificado # multimedia folder
+      - ${CONFIG}/Transmission:/config
+      - ${SHARED}:/AlmacenUnificado
     ports:
-      - 9091:9091 # Web UI port
-      - 51413:51413 # Torrent port (TCP)
-      - 51413:51413/udp # Torrent port (UDP)
+      - 9091:9091
+      - 51413:51413
+      - 51413:51413/udp
     restart: unless-stopped
