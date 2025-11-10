@@ -1,11 +1,12 @@
-version: "3.4"
 services:
   radarr:
     image: linuxserver/radarr:latest
     container_name: radarr
     hostname: radarr
     healthcheck:
-      test: "curl -Lk -fsS http://localhost:7878 || exit 1"
+      test: curl -Lk -fsS http://localhost:7878 || exit 1
+    networks:
+      - media_net
     environment:
       - PUID=${PUID:-1000}
       - PGID=${PGID:-1000}
@@ -17,13 +18,15 @@ services:
     ports:
       - 7878:7878/tcp
     restart: unless-stopped
-      
+    
   sonarr:
     image: linuxserver/sonarr:latest
     container_name: sonarr
     hostname: sonarr
     healthcheck:
-      test: "curl -Lk -fsS http://localhost:8989 || exit 1"
+      test: curl -Lk -fsS http://localhost:8989 || exit 1
+    networks:
+      - media_net
     environment:
       - PUID=${PUID:-1000}
       - PGID=${PGID:-1000}
@@ -35,13 +38,13 @@ services:
     ports:
       - 8989:8989/tcp
     restart: unless-stopped
-
+    
   prowlarr:
     image: linuxserver/prowlarr:latest
     container_name: prowlarr
     hostname: prowlarr
     healthcheck:
-      test: "curl -Lk -fsS http://localhost:9696 || exit 1"
+      test: curl -Lk -fsS http://localhost:9696 || exit 1
     ports:
       - 9696:9696/tcp
     environment:
@@ -52,35 +55,15 @@ services:
     volumes:
       - ${CONFIG}/prowlarr:/config/:rw
     restart: unless-stopped
-      
-  transmission:
-    image: lscr.io/linuxserver/transmission:4.0.4
-    container_name: transmission
-    hostname: transmission
-    healthcheck:
-      test: "curl -Lk -fsS http://localhost:9091 || exit 1"
-    environment:
-      - PUID=${PUID:-1000}
-      - PGID=${PGID:-1000}
-      - TZ=${TZ:-Etc/UTC}
-      - UMASK=${UMASK:-022}
-    volumes:
-      - ${CONFIG}/transmission:/config/:rw
-      - ${SHARED}:/multimedia/:rw
-    ports:
-      - 9091:9091/tcp
-      - 51413:51413/tcp
-      - 51413:51413/udp
-    restart: unless-stopped
-    stop_grace_period: 30m
     
   qbittorrent-nox:
     image: qbittorrentofficial/qbittorrent-nox:5.1.2-1
     container_name: qbittorrent-nox
     hostname: qbittorrent-nox
     healthcheck:
-      test: "curl -Lk -fsS http://localhost:8080 || exit 1"
-    restart: unless-stopped
+      test: curl -Lk -fsS http://localhost:8080 || exit 1
+    networks:
+      - media_net
     ports:
       - 8080:8080/tcp
       - 6881:6881/tcp
@@ -96,4 +79,10 @@ services:
       - PUID=${PUID:-1000}
       - PGID=${PGID:-1000}
       - UMASK_SET=${UMASK:-022}
+    restart: unless-stopped
     stop_grace_period: 30m
+    
+networks:
+  media_net:
+    name: media_net
+    driver: bridge
