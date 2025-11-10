@@ -45,6 +45,8 @@ services:
     hostname: prowlarr
     healthcheck:
       test: curl -Lk -fsS http://localhost:9696 || exit 1
+    networks:
+      - media_net
     ports:
       - 9696:9696/tcp
     environment:
