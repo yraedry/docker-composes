@@ -3,8 +3,6 @@ services:
     image: ghcr.io/bakito/adguardhome-sync
     container_name: adguardhome-sync
     hostname: adguardhome-sync
-    healthcheck:
-      test: curl -Lk -fsS http://localhost:8081 || exit 1
     environment:
       TZ: ${TZ}
       LOG_LEVEL: ${LOG_LEVEL}
