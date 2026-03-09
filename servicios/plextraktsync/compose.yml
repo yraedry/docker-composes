@@ -1,0 +1,33 @@
+services:
+  plextraktsync:
+    image: ghcr.io/taxel/plextraktsync:0.34.19
+    container_name: plextraktsync
+    hostname: plextraktsync
+    command: watch
+    environment:
+      - TZ=${TZ}
+      - PLEX_BASEURL=${PLEX_BASEURL}
+      - PLEX_TOKEN=${PLEX_TOKEN}
+      - PLEX_USERNAME=${PLEX_USERNAME}
+    volumes:
+      - ./config:/app/config
+    networks:
+      - red-servicios
+  scheduler:
+    image: mcuadros/ofelia:0.3
+    container_name: scheduler
+    depends_on:
+      - plextraktsync
+    command: daemon --docker
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    labels:
+      ofelia.job-exec.plextraktsync.schedule: "@every 6h"
+      ofelia.job-exec.plextraktsync.container: "plextraktsync"
+      ofelia.job-exec.plextraktsync.command: "plextraktsync sync"
+    networks:
+      - red-servicios
+
+networks:
+  red-servicios:
+    external: true

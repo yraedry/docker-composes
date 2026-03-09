@@ -1,0 +1,18 @@
+services:
+  stirling-pdf:
+    image: stirlingtools/stirling-pdf:latest
+    container_name: stirling-pdf
+    hostname: stirling-pdf
+    healthcheck:
+      test: curl -Lk -fsS http://localhost:8081 || exit 1
+    ports:
+      - "8081:8080"
+    environment:
+      - DOCKER_ENABLE_SECURITY=${DOCKER_ENABLE_SECURITY}
+    restart: always
+    networks:
+      - red-servicios
+
+networks:
+  red-servicios:
+    external: true

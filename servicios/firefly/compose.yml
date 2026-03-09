@@ -1,0 +1,28 @@
+services:
+  firefly-app:
+    image: fireflyiii/core:latest
+    container_name: firefly
+    hostname: firefly
+    healthcheck:
+      test: curl -Lk -fsS http://localhost:8080 || exit 1
+    environment:
+      - APP_KEY=${APP_KEY}
+      - DB_CONNECTION=${DB_CONNECTION}  
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_DATABASE=${DB_DATABASE}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - APP_URL=${APP_URL}
+      - TZ=${TZ}
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./upload:/var/www/html/storage/upload
+    restart: always
+    networks:
+      - red-servicios
+
+networks:
+  red-servicios:
+    external: true

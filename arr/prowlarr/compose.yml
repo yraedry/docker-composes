@@ -1,0 +1,23 @@
+services:   
+  prowlarr:
+    image: linuxserver/prowlarr:2.3.0
+    container_name: prowlarr
+    hostname: prowlarr
+    healthcheck:
+      test: curl -Lk -fsS http://localhost:9696 || exit 1
+    ports:
+      - 9696:9696/tcp
+    environment:
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
+      - TZ=Europa/Madrid
+      - UMASK=${UMASK:-022}
+    volumes:
+      - ./config:/config/:rw
+    restart: unless-stopped
+    networks:
+      - red-arr
+
+networks:
+  red-arr:
+    external: true

@@ -1,0 +1,24 @@
+services:
+  mealie:
+    image: ghcr.io/mealie-recipes/mealie:latest
+    container_name: mealie
+    hostname: mealie
+    healthcheck:
+      test: curl -Lk -fsS http://localhost:9000 || exit 1
+    environment:
+      - PUID=${PUID:-1000}
+      - PGID=${PUID:-1000}
+      - TZ=${TZ}
+      - TOKEN_TIME=${TOKEN_TIME}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./data:/app/data
+    restart: always
+    networks:
+      - red-servicios
+
+networks:
+  red-servicios:
+    external: true

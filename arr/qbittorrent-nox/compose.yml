@@ -1,0 +1,30 @@
+services: 
+  qbittorrent-nox:
+    image: qbittorrentofficial/qbittorrent-nox:5.1.2-1
+    container_name: qbittorrent-nox
+    hostname: qbittorrent-nox
+    healthcheck:
+      test: curl -Lk -fsS http://localhost:8080 || exit 1
+    ports:
+      - 8080:8080/tcp
+      - 6881:6881/tcp
+      - 6881:6881/udp
+    volumes:
+      - ./config:/config/:rw
+      - ./logs:/config/logs/:rw
+      - ${UNRAID_MOUNT}:/multimedia/:rw
+    environment:
+      - TZ=${TZ}
+      - QBT_LEGAL_NOTICE=confirm
+      - QBT_WEBUI_PORT=8080
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
+      - UMASK_SET=${UMASK:-022}
+    restart: unless-stopped
+    stop_grace_period: 30m
+    networks:
+      - red-arr
+
+networks:
+  red-arr:
+    external: true

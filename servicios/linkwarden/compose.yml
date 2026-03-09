@@ -1,0 +1,22 @@
+services:
+  linkwarden:
+    image: ghcr.io/linkwarden/linkwarden:latest
+    container_name: linkwarden
+    hostname: linkwarden
+    healthcheck:
+      test: curl -Lk -fsS http://localhost:3000 || exit 1
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+      - NEXTAUTH_URL=${NEXTAUTH_URL}
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data:/data/data
+    restart: always
+    networks:
+      - red-servicios
+
+networks:
+  red-servicios:
+    external: true
