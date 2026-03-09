@@ -10,7 +10,7 @@ services:
     environment:
       - PUID=${PUID:-1000}
       - PGID=${PGID:-1000}
-      - TZ=Europa/Madrid
+      - TZ=${TZ}
       - UMASK=${UMASK:-022}
     volumes:
       - ./config:/config/:rw
