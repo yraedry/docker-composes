@@ -4,7 +4,7 @@ services:
     container_name: npm
     hostname: npm
     healthcheck:
-      test: curl -Lk -fsS http://localhost:81 || exit 1
+      test: curl -Lk -fsS http://localhost:80 || exit 1
     ports:
       - 80:80
       - 443:443
