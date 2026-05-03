@@ -22,6 +22,11 @@ services:
       - UMASK_SET=${UMASK:-022}
     restart: unless-stopped
     stop_grace_period: 30m
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       - red-arr
 

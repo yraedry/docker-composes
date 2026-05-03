@@ -11,6 +11,12 @@ services:
       - PLEX_USERNAME=${PLEX_USERNAME}
     volumes:
       - ./config:/app/config
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       - red-servicios
   scheduler:
@@ -25,6 +31,12 @@ services:
       ofelia.job-exec.plextraktsync.schedule: "@every 6h"
       ofelia.job-exec.plextraktsync.container: "plextraktsync"
       ofelia.job-exec.plextraktsync.command: "plextraktsync sync"
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       - red-servicios
 

@@ -5,8 +5,15 @@ services:
     hostname: postgres-servicios
     environment:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
       - ./data:/var/lib/postgresql/data
-    restart: always
+      - ./init:/docker-entrypoint-initdb.d:ro
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       - red-servicios
 

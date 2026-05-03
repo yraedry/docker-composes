@@ -9,7 +9,12 @@ services:
       - "8081:8080"
     environment:
       - DOCKER_ENABLE_SECURITY=${DOCKER_ENABLE_SECURITY}
-    restart: always
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       - red-servicios
 
